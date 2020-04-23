@@ -1,0 +1,10 @@
+{
+  "name": "websocket-lambda",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "socketio": "^1.0.0",
+    "ws": "^7.2.3"
+  }
+}

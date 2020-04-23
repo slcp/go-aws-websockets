@@ -1,0 +1,74 @@
+service: websoket-lambda
+
+custom:
+  dev:
+  uat:
+  prod:
+
+provider:
+  name: aws
+  runtime: go1.x
+  stage: dev
+  region: eu-west-2
+  endpointType: regional
+  versionFunctions: false
+  memorySize: 128
+  timeout: 6
+  logs:
+    websocket:
+      level: ERROR
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:Query
+        - dynamodb:GetItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - Fn::GetAtt: [DataTable, Arn]
+
+package:
+  individually: true
+  exclude:
+    - ./**
+
+functions:
+  api:
+    handler: bin/connectionmanager
+    package:
+      include:
+        - ./bin/connectionmanager
+    events:
+      - websocket:
+          route: $connect
+      - websocket:
+          route: $disconnect
+      - websocket:
+          route: $default
+
+resources:
+  Resources:
+    DataTable:
+      Type: "AWS::DynamoDB::Table"
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:service}-${opt:stage, self:provider.stage}-data
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+        SSESpecification:
+          SSEEnabled: true
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+          - AttributeName: sk
+            KeyType: RANGE
+        Tags:
+          - Key: Environment
+            Value: ${opt:stage, self:provider.stage}
