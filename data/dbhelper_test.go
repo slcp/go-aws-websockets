@@ -27,7 +27,7 @@ func CreateTestTable() (sess *session.Session, tableName string, drop func() err
 		TableName: aws.String(tableName),
 		AttributeDefinitions: []*dynamodb.AttributeDefinition{
 			{AttributeName: aws.String("pk"), AttributeType: aws.String("S")},
-			{AttributeName: aws.String("sk"), AttributeType: aws.String("S")},
+			{AttributeName: aws.String("sk"), AttributeType: aws.String("N")},
 		},
 		KeySchema: []*dynamodb.KeySchemaElement{
 			{AttributeName: aws.String("pk"), KeyType: aws.String("HASH")},

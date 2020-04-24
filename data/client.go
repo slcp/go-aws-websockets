@@ -26,22 +26,6 @@ func NewDataStore(tableName string, s *session.Session) (store *DataStore) {
 	}
 }
 
-// // GetDailySalesCount retrieves daily sales count for a store SKU.
-// func (cs DataStore) GetDailySalesCount(date time.Time, sku string) (count int64, ok bool, err error) {
-// 	gio, err := cs.Client.GetItem(&dynamodb.GetItemInput{
-// 		Key:       createKey(date, sku),
-// 		TableName: cs.TableName,
-// 	})
-// 	if err != nil {
-// 		return
-// 	}
-// 	if gio.Item == nil {
-// 		return 0, false, nil
-// 	}
-// 	err = dynamodbattribute.Unmarshal(gio.Item["count"], &count)
-// 	return count, true, err
-// }
-
 // // GetAllDailySalesCounts retrieves daily sales count for a store SKU.
 // func (cs DataStore) GetAllDailySalesCounts(date time.Time) (out map[string]CountRecord, err error) {
 // 	q := expression.Key("pk").Equal(expression.Value(makePK(date)))
