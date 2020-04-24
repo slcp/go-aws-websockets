@@ -27,6 +27,11 @@ provider:
         - dynamodb:DeleteItem
       Resource:
         - Fn::GetAtt: [DataTable, Arn]
+    - Effect: Allow
+      Action:
+        - sns:Publish
+      Resource:
+        - Ref: LoopBackTopic
 
 package:
   individually: true
@@ -46,6 +51,18 @@ functions:
           route: $disconnect
       - websocket:
           route: $default
+    environment:
+      TOPIC_ARN: 
+        Ref: LoopBackTopic
+  pushfromsns:
+    handler: bin/loopback
+    package:
+      include:
+        - ./bin/loopback
+    events:
+      - sns: 
+          arn: !Ref LoopBackTopic
+          topicName: ${self:service}-${opt:stage, self:provider.stage}-loopback
 
 resources:
   Resources:
@@ -63,12 +80,20 @@ resources:
           - AttributeName: pk
             AttributeType: S
           - AttributeName: sk
-            AttributeType: S
+            AttributeType: N
         KeySchema:
           - AttributeName: pk
             KeyType: HASH
           - AttributeName: sk
             KeyType: RANGE
+        Tags:
+          - Key: Environment
+            Value: ${opt:stage, self:provider.stage}
+    
+    LoopBackTopic:
+      Type: "AWS::SNS::Topic"
+      Properties:
+        TopicName: ${self:service}-${opt:stage, self:provider.stage}-loopback
         Tags:
           - Key: Environment
             Value: ${opt:stage, self:provider.stage}
