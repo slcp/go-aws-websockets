@@ -49,11 +49,18 @@ functions:
           route: $connect
       - websocket:
           route: $disconnect
-      - websocket:
-          route: $default
     environment:
       TOPIC_ARN: 
         Ref: LoopBackTopic
+  messages:
+    handler: bin/messages
+    package:
+      include:
+        - ./bin/messages
+    events:
+      - websocket:
+          route: $default
+          routeResponseSelectionExpression: $default
   pushfromsns:
     handler: bin/loopback
     package:
