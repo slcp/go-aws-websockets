@@ -96,6 +96,9 @@ resources:
         Tags:
           - Key: Environment
             Value: ${opt:stage, self:provider.stage}
+        TimeToLiveSpecification:
+            AttributeName: ttl
+            Enabled: TRUE
     
     LoopBackTopic:
       Type: "AWS::SNS::Topic"
